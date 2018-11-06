@@ -7,9 +7,23 @@ from __future__ import absolute_import, print_function
 from ctypes import POINTER, c_char_p, c_int
 
 from llvmlite import ir
-from . import ffi
+from . import ffi, ModuleRef
 from .module import parse_assembly
 
+def get_call_graph(moduleref):
+    """
+    :param moduleref: LLVMModuleRef
+    :return: a string representing call graph of moduleref
+    """
+    assert moduleref is not None
+    if isinstance(moduleref, ModuleRef):
+        pass
+    else:
+        pass
+
+    with ffi.OutputString() as dotstr:
+        ffi.lib.LLVMPY_WriteCallGraph(moduleref, dotstr)
+        return str(dotstr)
 
 def get_function_cfg(func, show_inst=True):
     """Return a string of the control-flow graph of the function in DOT
@@ -69,3 +83,4 @@ def view_dot_graph(graph, filename=None, view=False):
 
 # Ctypes binding
 ffi.lib.LLVMPY_WriteCFG.argtypes = [ffi.LLVMValueRef, POINTER(c_char_p), c_int]
+ffi.lib.LLVMPY_WriteCallGraph.argtypes = [ffi.LLVMModuleRef, POINTER(c_char_p)]
